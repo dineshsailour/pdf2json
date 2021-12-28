@@ -315,8 +315,10 @@ var WidgetAnnotation = (function WidgetAnnotationClosure() {
 
     data.fieldValue = stringToPDFString(
       Util.getInheritableProperty(dict, 'V') || '');
-    data.alternativeText = stringToPDFString(dict.get('TU') || '');
-    
+
+    // data.alternativeText = stringToPDFString(dict.get('TU') || '');  comment by JEET as nnot getting tooltip value with duplicate fields     :: DINESH SAILOUR - 10-04-2019
+    data.alternativeText = stringToPDFString(Util.getInheritableProperty(dict, 'TU') || ''); // added this to solve tooltip issue with duplicate fields too   :: DINESH SAILOUR - 10-04-2019
+
     data.alternativeID = stringToPDFString(dict.get('TM') || '');
 
     data.defaultAppearance = Util.getInheritableProperty(dict, 'DA') || '';
@@ -361,8 +363,11 @@ var WidgetAnnotation = (function WidgetAnnotationClosure() {
 //END:MQZ. Sep.19.2012. comment out the fullname routin, replace it with getInheritableProperty('T') //PDF Spec P.689
 //It matches a sequence of at least one period or space, which is then replaced by a single underscore
       var itemNameStr = stringToPDFString(Util.getInheritableProperty(dict, 'T') || '');
-      itemNameStr = itemNameStr.replace(/[.\s\W]+/g, '_'); //replace spaces and non-word character (not [^a-zA-Z0-9_]) with _
-      data.fullName = itemNameStr.replace(/^[\s_,:.;\/\\]+/, ''); //replace starting punctuation
+      // itemNameStr = itemNameStr.replace(/[.\s\W]+/g, '_'); //replace spaces and non-word character (not [^a-zA-Z0-9_]) with _
+      // data.fullName = itemNameStr.replace(/^[\s_,:.;\/\\]+/, ''); //replace starting punctuation
+
+      // as we don't need to replace anything  we are using custom pdf field naming     :: DINESH SAILOUR - 30-03-2019
+      data.fullName=itemNameStr;
 
       PDFAnno.processAnnotation(dict, data);
   }
@@ -370,10 +375,11 @@ var WidgetAnnotation = (function WidgetAnnotationClosure() {
   var parent = Annotation.prototype;
   Util.inherit(WidgetAnnotation, Annotation, {
     isViewable: function WidgetAnnotation_isViewable() {
-      if (this.data.fieldType === 'Sig') {
-        TODO('unimplemented annotation type: Widget signature');
-        return false;
-      }
+      // as we need signature signature field too remove this line and base on it change    :: DINESH SAILOUR - 25-03-2019
+      // if (this.data.fieldType === 'Sig') {
+      //   TODO('unimplemented annotation type: Widget signature');
+      //   return false;
+      // }
 
       return parent.isViewable.call(this);
     }
